@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>钓鱼邮件安全知识培训</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        
+        .title {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        /* 步骤按钮样式（包含视频标题+进度） */
+        .step-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0 10px;
+            gap: 5px;
+        }
+        
+        .step {
+            flex: 1;
+            padding: 10px 5px;
+            background-color: #dcdfe6;
+            border-radius: 20px;
+            color: #c0c4cc;
+            cursor: not-allowed;
+            transition: all 0.3s;
+            text-align: center;
+            line-height: 1.4;
+        }
+        
+        .step.active {
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .step.completed {
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+        }
+        
+        /* 整体培训进度 */
+        .overall-progress-area {
+            margin: 15px 0;
+        }
+        
+        .overall-progress-text {
+            color: #2c3e50;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        
+        .overall-progress {
+            height: 8px;
+            background-color: #ecf0f1;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .overall-progress-bar {
+            height: 100%;
+            background-color: #3498db;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        /* 视频区域 */
+        .video-section {
+            margin-bottom: 20px;
+        }
+        
+        .video-container {
+            width: 100%;
+            height: 450px;
+            margin: 10px 0;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        /* 操作按钮：仅在视频播放结束后显示，播放中隐藏 */
+        .action-buttons {
+            display: none;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            gap: 10px;
+            z-index: 5;
+        }
+        
+        .action-buttons.show {
+            display: flex;
+        }
+        
+        .action-btn {
+            padding: 10px 20px;
+            background-color: #3498db;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .action-btn.secondary {
+            background-color: #f39c12;
+        }
+        
+        /* 答题弹窗 */
+        .question-modal {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            color: white;
+        }
+        
+        /* 标题与关闭按钮同排 */
+        .question-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+        .question-title {
+            font-size: 18px;
+            margin-bottom: 0;
+            color: #3498db;
+            flex: 1;
+            margin-right: 15px;
+        }
+        /* 关闭按钮样式（灰色） */
+        .close-question-btn {
+            background-color: #666;
+            border: 1px solid #888;
+            color: #fff;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+            flex-shrink: 0;
+        }
+        .close-question-btn:hover {
+            background-color: #888;
+        }
+        
+        .question-content {
+            background-color: #2c3e50;
+            padding: 30px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+        }
+        
+        .options {
+            margin: 20px 0;
+        }
+        
+        .option {
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #34495e;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .option:hover {
+            background-color: #4a6584;
+        }
+        
+        .option.correct {
+            background-color: #27ae60;
+        }
+        
+        .option.incorrect {
+            background-color: #e74c3c;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            background-color: #3498db;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .retry-btn {
+            background-color: #f39c12;
+            margin-left: 10px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        /* 调查问卷 */
+        .survey-container {
+            margin-top: 30px;
+        }
+        
+        .reset-progress-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 8px 15px;
+            background-color: #e74c3c;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <button class="reset-progress-btn" onclick="resetProgress()">重置学习进度</button>
+    
+    <div class="container">
+        <h1 class="title">钓鱼邮件安全知识培训</h1>
+        
+        <!-- 步骤按钮：包含视频标题+进度 -->
+        <div class="step-indicator">
+            <div class="step active" id="step1" onclick="handleStepClick(1)">
+                视频1<br>
+                <span id="step1Progress">0%</span>
+            </div>
+            <div class="step" id="step2" onclick="handleStepClick(2)">
+                视频2<br>
+                <span id="step2Progress">0%</span>
+            </div>
+            <div class="step" id="step3" onclick="handleStepClick(3)">
+                视频3<br>
+                <span id="step3Progress">0%</span>
+            </div>
+            <div class="step" id="step4" onclick="handleStepClick(4)">
+                调查问卷<br>
+                <span id="step4Progress">0%</span>
+            </div>
+        </div>
+        
+        <!-- 整体培训进度 -->
+        <div class="overall-progress-area">
+            <div class="overall-progress-text">整体培训进度</div>
+            <div class="overall-progress">
+                <div class="overall-progress-bar" id="overallProgressBar"></div>
+            </div>
+        </div>
+        
+        <!-- 视频1区域 -->
+        <div id="video1" class="video-section">
+            <div class="video-container">
+                <video id="videoPlayer1" width="100%" height="100%" controls>
+                    <source src="https://neusoftdbts.sharepoint.com/sites/vueL/Shared%20Documents/%E8%A7%86%E9%A2%91%E4%B8%80.mp4" type="video/mp4">
+                    您的浏览器不支持视频播放
+                </video>
+                
+                <!-- 操作按钮 -->
+                <div class="action-buttons" id="actionButtons1">
+                    <button class="action-btn secondary" onclick="restartVideo(1)">重新学习</button>
+                    <button class="action-btn" onclick="showQuestion(1)">开始答题</button>
+                </div>
+                
+                <div class="question-modal hidden" id="question1">
+                    <div class="question-content">
+                        <div class="question-modal-header">
+                            <div class="question-title">测试题1：以下哪项不是钓鱼邮件的常见特征？</div>
+                            <button class="close-question-btn" onclick="closeQuestion(1)">×</button>
+                        </div>
+                        <div class="options">
+                            <div class="option" onclick="selectAnswer(1, this)" data-answer="false">A. 发件人邮箱地址异常</div>
+                            <div class="option" onclick="selectAnswer(1, this)" data-answer="false">B. 包含紧急催促的语言</div>
+                            <div class="option" onclick="selectAnswer(1, this)" data-answer="true">C. 邮件内容使用公司正式模板</div>
+                            <div class="option" onclick="selectAnswer(1, this)" data-answer="false">D. 包含不明来源的附件</div>
+                        </div>
+                        <div id="feedback1" style="margin-top: 15px;"></div>
+                        <button class="btn hidden" id="continueBtn1" onclick="continueToVideo2()">继续学习</button>
+                        <button class="btn retry-btn hidden" id="retryBtn1" onclick="resetQuestion(1)">重新答题</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 视频2区域 -->
+        <div id="video2" class="video-section hidden">
+            <div class="video-container">
+                <video id="videoPlayer2" width="100%" height="100%" controls>
+                    <source src="https://neusoftdbts.sharepoint.com/sites/vueL/Shared%20Documents/%E8%A7%86%E9%A2%91%E4%BA%8C.mp4" type="video/mp4">
+                    您的浏览器不支持视频播放
+                </video>
+                
+                <div class="action-buttons" id="actionButtons2">
+                    <button class="action-btn secondary" onclick="restartVideo(2)">重新学习</button>
+                    <button class="action-btn" onclick="showQuestion(2)">开始答题</button>
+                </div>
+                
+                <div class="question-modal hidden" id="question2">
+                    <div class="question-content">
+                        <div class="question-modal-header">
+                            <div class="question-title">测试题2：收到疑似钓鱼邮件，正确的处理方式是？</div>
+                            <button class="close-question-btn" onclick="closeQuestion(2)">×</button>
+                        </div>
+                        <div class="options">
+                            <div class="option" onclick="selectAnswer(2, this)" data-answer="false">A. 点击邮件中的链接验证真伪</div>
+                            <div class="option" onclick="selectAnswer(2, this)" data-answer="false">B. 回复邮件询问发件人</div>
+                            <div class="option" onclick="selectAnswer(2, this)" data-answer="true">C. 立即向IT部门报告并删除邮件</div>
+                            <div class="option" onclick="selectAnswer(2, this)" data-answer="false">D. 转发给同事确认</div>
+                        </div>
+                        <div id="feedback2" style="margin-top: 15px;"></div>
+                        <button class="btn hidden" id="continueBtn2" onclick="continueToVideo3()">继续学习</button>
+                        <button class="btn retry-btn hidden" id="retryBtn2" onclick="resetQuestion(2)">重新答题</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 视频3区域 -->
+        <div id="video3" class="video-section hidden">
+            <div class="video-container">
+                <video id="videoPlayer3" width="100%" height="100%" controls>
+                    <source src="https://neusoftdbts.sharepoint.com/sites/vueL/Shared%20Documents/%E8%A7%86%E9%A2%91%E4%B8%89.mp4" type="video/mp4">
+                    您的浏览器不支持视频播放
+                </video>
+                
+                <div class="action-buttons" id="actionButtons3">
+                    <button class="action-btn secondary" onclick="restartVideo(3)">重新学习</button>
+                    <button class="action-btn" onclick="showQuestion(3)">开始答题</button>
+                </div>
+                
+                <div class="question-modal hidden" id="question3">
+                    <div class="question-content">
+                        <div class="question-modal-header">
+                            <div class="question-title">测试题3：不慎点击钓鱼链接后，首先应该做什么？</div>
+                            <button class="close-question-btn" onclick="closeQuestion(3)">×</button>
+                        </div>
+                        <div class="options">
+                            <div class="option" onclick="selectAnswer(3, this)" data-answer="true">A. 断开网络并向IT部门报告</div>
+                            <div class="option" onclick="selectAnswer(3, this)" data-answer="false">B. 关闭浏览器继续工作</div>
+                            <div class="option" onclick="selectAnswer(3, this)" data-answer="false">C. 单独运行杀毒软件</div>
+                            <div class="option" onclick="selectAnswer(3, this)" data-answer="false">D. 重启电脑</div>
+                        </div>
+                        <div id="feedback3" style="margin-top: 15px;"></div>
+                        <button class="btn hidden" id="continueBtn3" onclick="showSurvey()">继续学习</button>
+                        <button class="btn retry-btn hidden" id="retryBtn3" onclick="resetQuestion(3)">重新答题</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 调查问卷 -->
+        <div id="survey" class="survey-container hidden">
+            <h2>培训满意度调查问卷</h2>
+            <button class="btn" onclick="submitSurvey()">提交问卷</button>
+        </div>
+    </div>
+
+    <script>
+        // 进度数据
+        const PROGRESS_KEY = 'phishTrainingProgress';
+        let progress = {
+            currentStep: 1,
+            video1: { watched: false, progress: 0, duration: 0, playing: false },
+            video2: { watched: false, progress: 0, duration: 0, playing: false },
+            video3: { watched: false, progress: 0, duration: 0, playing: false },
+            q1Correct: false,
+            q2Correct: false,
+            q3Correct: false,
+            surveyDone: false,
+            isAllCompleted: false // 标记是否完成全部学习（视频3答题正确）
+        };
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProgress();
+            // 初始化时判断是否完成全部学习
+            progress.isAllCompleted = progress.video3.watched && progress.q3Correct;
+            initVideoWithMetadata(1);
+            initVideoWithMetadata(2);
+            initVideoWithMetadata(3);
+            updateStepButtons();
+            updateAllProgressDisplays();
+        });
+
+        // 视频初始化：播放中隐藏按钮，结束后显示
+        function initVideoWithMetadata(num) {
+            const video = document.getElementById(`videoPlayer${num}`);
+            const actionBtn = document.getElementById(`actionButtons${num}`);
+            
+            if (progress[`video${num}`].progress > 0) {
+                video.currentTime = progress[`video${num}`].progress;
+            }
+
+            // 获取视频时长
+            video.addEventListener('loadedmetadata', () => {
+                progress[`video${num}`].duration = video.duration;
+                saveProgress();
+                updateStepProgress(num);
+            });
+            
+            // 视频播放状态监听
+            video.addEventListener('play', () => {
+                progress[`video${num}`].playing = true;
+                actionBtn.classList.remove('show'); // 播放中隐藏按钮
+            });
+
+            video.addEventListener('pause', () => {
+                progress[`video${num}`].playing = false;
+                // 暂停且进度≥98% 才显示按钮
+                if (video.currentTime / progress[`video${num}`].duration >= 0.98 || video.ended) {
+                    actionBtn.classList.add('show');
+                }
+            });
+
+            video.addEventListener('ended', () => {
+                progress[`video${num}`].playing = false;
+                progress[`video${num}`].watched = true;
+                saveProgress();
+                actionBtn.classList.add('show'); // 结束后显示按钮
+                // 更新全部完成状态
+                progress.isAllCompleted = progress.video3.watched && progress.q3Correct;
+                updateStepButtons();
+                updateOverallProgress();
+            });
+            
+            // 实时更新进度
+            video.addEventListener('timeupdate', () => {
+                if (progress[`video${num}`].duration === 0) return;
+                // 完成全部学习后，进度强制保持100%
+                if (progress.isAllCompleted) {
+                    progress[`video${num}`].progress = progress[`video${num}`].duration;
+                    progress[`video${num}`].watched = true;
+                } else {
+                    progress[`video${num}`].progress = video.currentTime;
+                }
+                saveProgress();
+                updateStepProgress(num);
+            });
+        }
+
+        // 1. 视频进度显示到步骤按钮内
+        function updateStepProgress(num) {
+            const progressEl = document.getElementById(`step${num}Progress`);
+            let currentProgress = 0;
+            
+            if (progress[`video${num}`].duration > 0) {
+                // 完成全部学习后，进度强制100%
+                if (progress.isAllCompleted) {
+                    currentProgress = 100;
+                } else {
+                    currentProgress = Math.min(Math.floor((progress[`video${num}`].progress / progress[`video${num}`].duration) * 100), 100);
+                    if (progress[`video${num}`].watched) currentProgress = 100;
+                }
+            }
+            
+            progressEl.textContent = `${currentProgress}%`;
+            // 问卷进度特殊处理
+            if (num === 4) {
+                progressEl.textContent = progress.surveyDone ? "100%" : "0%";
+            }
+        }
+
+        // 整体培训进度
+        function updateOverallProgress() {
+            const bar = document.getElementById('overallProgressBar');
+            let totalProgress = 0;
+            
+            if (progress.video1.watched && progress.q1Correct) totalProgress += 33;
+            if (progress.video2.watched && progress.q2Correct) totalProgress += 33;
+            if (progress.video3.watched && progress.q3Correct) totalProgress += 34;
+            if (progress.surveyDone) totalProgress = 100;
+            
+            bar.style.width = `${totalProgress}%`;
+        }
+
+        function updateAllProgressDisplays() {
+            updateStepProgress(1);
+            updateStepProgress(2);
+            updateStepProgress(3);
+            updateStepProgress(4);
+            updateOverallProgress();
+        }
+
+        // 步骤按钮样式更新（核心：完成全部学习后，所有按钮保持已完成）
+        function updateStepButtons() {
+            // 完成全部学习后，所有按钮变为已完成状态
+            if (progress.isAllCompleted) {
+                document.getElementById('step1').className = progress.currentStep === 1 ? 'step active' : 'step completed';
+                document.getElementById('step2').className = progress.currentStep === 2 ? 'step active' : 'step completed';
+                document.getElementById('step3').className = progress.currentStep === 3 ? 'step active' : 'step completed';
+                document.getElementById('step4').className = progress.currentStep === 4 ? 'step active' : 'step completed';
+                return;
+            }
+
+            // 未完成全部学习时，按原逻辑
+            document.getElementById('step1').className = 'step';
+            document.getElementById('step2').className = 'step';
+            document.getElementById('step3').className = 'step';
+            document.getElementById('step4').className = 'step';
+            
+            // 视频1
+            if (progress.currentStep === 1 || progress.video1.watched) {
+                document.getElementById('step1').className = progress.currentStep === 1 ? 'step active' : 'step completed';
+            }
+            
+            // 视频2
+            if (progress.video1.watched && progress.q1Correct) {
+                document.getElementById('step2').className = progress.currentStep === 2 ? 'step active' : 'step completed';
+            }
+            
+            // 视频3
+            if (progress.video2.watched && progress.q2Correct) {
+                document.getElementById('step3').className = progress.currentStep === 3 ? 'step active' : 'step completed';
+            }
+            
+            // 问卷
+            if (progress.video3.watched && progress.q3Correct) {
+                document.getElementById('step4').className = progress.currentStep === 4 ? 'step active' : 'step completed';
+            }
+        }
+
+        // 切换步骤（核心：完成全部学习后，可随意切换）
+        function handleStepClick(step) {
+            document.querySelectorAll('.video-section, #survey').forEach(el => el.classList.add('hidden'));
+            
+            // 完成全部学习后，可随意切换任意步骤
+            if (progress.isAllCompleted) {
+                if (step === 1) document.getElementById('video1').classList.remove('hidden');
+                if (step === 2) document.getElementById('video2').classList.remove('hidden');
+                if (step === 3) document.getElementById('video3').classList.remove('hidden');
+                if (step === 4) document.getElementById('survey').classList.remove('hidden');
+                progress.currentStep = step;
+                saveProgress();
+                closeQuestion(progress.currentStep);
+                updateStepButtons();
+                return;
+            }
+
+            // 未完成全部学习时，按原逻辑
+            if (step === 1) {
+                document.getElementById('video1').classList.remove('hidden');
+                progress.currentStep = 1;
+            } else if (step === 2 && progress.video1.watched && progress.q1Correct) {
+                document.getElementById('video2').classList.remove('hidden');
+                progress.currentStep = 2;
+            } else if (step === 3 && progress.video2.watched && progress.q2Correct) {
+                document.getElementById('video3').classList.remove('hidden');
+                progress.currentStep = 3;
+            } else if (step === 4 && progress.video3.watched && progress.q3Correct) {
+                document.getElementById('survey').classList.remove('hidden');
+                progress.currentStep = 4;
+            }
+            
+            saveProgress();
+            closeQuestion(progress.currentStep);
+            updateStepButtons();
+        }
+
+        // 答题弹窗控制
+        function showQuestion(qNum) {
+            const modal = document.getElementById(`question${qNum}`);
+            modal.classList.remove('hidden');
+            resetQuestion(qNum, false);
+        }
+
+        function closeQuestion(qNum) {
+            const modal = document.getElementById(`question${qNum}`);
+            if (modal) modal.classList.add('hidden');
+        }
+
+        // 选项点击处理函数
+        function selectAnswer(qNum, optionEl) {
+            const isCorrect = optionEl.dataset.answer === 'true';
+            const feedback = document.getElementById(`feedback${qNum}`);
+            const continueBtn = document.getElementById(`continueBtn${qNum}`);
+            const retryBtn = document.getElementById(`retryBtn${qNum}`);
+            
+            // 标记答题结果
+            progress[`q${qNum}Correct`] = isCorrect;
+            saveProgress();
+            
+            // 样式反馈
+            optionEl.classList.add(isCorrect ? 'correct' : 'incorrect');
+            feedback.textContent = isCorrect ? '✅ 回答正确！' : '❌ 回答错误，请重新答题';
+            feedback.style.color = isCorrect ? '#27ae60' : '#e74c3c';
+            
+            // 显示对应按钮
+            if (isCorrect) continueBtn.classList.remove('hidden');
+            else retryBtn.classList.remove('hidden');
+            
+            // 禁用所有选项点击
+            document.querySelectorAll(`#question${qNum} .option`).forEach(o => {
+                o.style.pointerEvents = 'none';
+            });
+            
+            // 更新全部完成状态
+            progress.isAllCompleted = progress.video3.watched && progress.q3Correct;
+            // 更新进度
+            updateOverallProgress();
+            updateStepButtons();
+        }
+
+        // 重置题目
+        function resetQuestion(qNum, clearAnswer = true) {
+            const modal = document.getElementById(`question${qNum}`);
+            modal.querySelectorAll('.option').forEach(o => {
+                o.classList.remove('correct', 'incorrect');
+                o.style.pointerEvents = 'auto'; // 恢复点击
+            });
+            document.getElementById(`feedback${qNum}`).textContent = '';
+            document.getElementById(`continueBtn${qNum}`).classList.add('hidden');
+            document.getElementById(`retryBtn${qNum}`).classList.add('hidden');
+            if (clearAnswer) {
+                progress[`q${qNum}Correct`] = false;
+                // 重置后，重新判断是否完成全部学习
+                progress.isAllCompleted = progress.video3.watched && progress.q3Correct;
+                saveProgress();
+            }
+        }
+
+        // 继续到下一个视频
+        function continueToVideo2() {
+            handleStepClick(2);
+        }
+
+        function continueToVideo3() {
+            handleStepClick(3);
+        }
+
+        function showSurvey() {
+            handleStepClick(4);
+        }
+
+        // 重新学习视频
+        function restartVideo(num) {
+            const video = document.getElementById(`videoPlayer${num}`);
+            const actionBtn = document.getElementById(`actionButtons${num}`);
+            
+            video.currentTime = 0;
+            video.play();
+            actionBtn.classList.remove('show');
+            // 完成全部学习后，重新学习不重置watched状态（进度保持100%）
+            if (!progress.isAllCompleted) {
+                progress[`video${num}`].watched = false;
+                progress[`video${num}`].progress = 0;
+            }
+            saveProgress();
+            updateStepProgress(num);
+            updateStepButtons();
+        }
+
+        // 提交问卷
+        function submitSurvey() {
+            progress.surveyDone = true;
+            saveProgress();
+            updateStepProgress(4);
+            updateOverallProgress();
+            alert('问卷提交成功！');
+        }
+
+        // 进度存储
+        function saveProgress() {
+            localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress));
+        }
+
+        function loadProgress() {
+            const saved = localStorage.getItem(PROGRESS_KEY);
+            if (saved) progress = JSON.parse(saved);
+        }
+
+        function resetProgress() {
+            if (confirm('确定重置进度？')) {
+                localStorage.removeItem(PROGRESS_KEY);
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
