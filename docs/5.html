@@ -2,1147 +2,131 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>钓鱼邮件安全知识培训</title>
+    <title>钓鱼邮件培训-带调试写库</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: "Microsoft YaHei", sans-serif;
-        }
-        
-        body {
-            background-color: #f5f7fa;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            padding: 30px;
-        }
-        
-        .title {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 30px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #3498db;
-        }
-        
-        /* 步骤按钮样式 */
-        .step-indicator {
-            display: flex;
-            justify-content: space-between;
-            margin: 20px 0 10px;
-            gap: 5px;
-        }
-        
-        .step {
-            flex: 1;
-            padding: 10px 5px;
-            background-color: #dcdfe6;
-            border-radius: 20px;
-            color: #c0c4cc;
-            cursor: not-allowed;
-            transition: all 0.3s;
-            text-align: center;
-            line-height: 1.4;
-        }
-        
-        .step.active {
-            background-color: #3498db;
-            color: white;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        
-        .step.completed {
-            background-color: #3498db;
-            color: white;
-            cursor: pointer;
-        }
-        
-        /* 整体进度条 */
-        .overall-progress-area {
-            margin: 15px 0;
-        }
-        
-        .overall-progress-text {
-            color: #2c3e50;
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-        
-        .overall-progress {
-            height: 8px;
-            background-color: #ecf0f1;
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        
-        .overall-progress-bar {
-            height: 100%;
-            background-color: #3498db;
-            width: 0%;
-            transition: width 0.3s;
-        }
-        
-        /* 视频区域 */
-        .video-section {
-            margin-bottom: 20px;
-        }
-        
-        .video-container {
-            width: 100%;
-            height: 450px;
-            margin: 10px 0;
-            border-radius: 8px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        video {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        
-        /* 视频操作按钮 */
-        .action-buttons {
-            display: none;
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            gap: 10px;
-            z-index: 5;
-        }
-        
-        .action-buttons.show {
-            display: flex;
-        }
-        
-        .action-btn {
-            padding: 10px 20px;
-            background-color: #3498db;
-            border: none;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        
-        .action-btn.secondary {
-            background-color: #f39c12;
-        }
-        
-        /* 答题弹窗 */
-        .question-modal {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
-            color: white;
-        }
-        
-        .question-modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            width: 100%;
-        }
-        
-        .question-title {
-            font-size: 18px;
-            margin-bottom: 0;
-            color: #3498db;
-            flex: 1;
-            margin-right: 15px;
-        }
-        
-        .close-question-btn {
-            background-color: #666;
-            border: 1px solid #888;
-            color: #fff;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background-color 0.2s;
-            flex-shrink: 0;
-        }
-        
-        .close-question-btn:hover {
-            background-color: #888;
-        }
-        
-        .question-content {
-            background-color: #2c3e50;
-            padding: 30px;
-            border-radius: 10px;
-            width: 80%;
-            max-width: 600px;
-        }
-        
-        .options {
-            margin: 20px 0;
-        }
-        
-        .option {
-            padding: 10px;
-            margin: 10px 0;
-            background-color: #34495e;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .option:hover {
-            background-color: #4a6584;
-        }
-        
-        .option.correct {
-            background-color: #27ae60;
-        }
-        
-        .option.incorrect {
-            background-color: #e74c3c;
-        }
-        
-        .btn {
-            padding: 10px 20px;
-            background-color: #3498db;
-            border: none;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        
-        .retry-btn {
-            background-color: #f39c12;
-            margin-left: 10px;
-        }
-        
-        .hidden {
-            display: none;
-        }
-        
-        /* 满意度问卷样式 */
-        .survey-container {
-            margin-top: 30px;
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-            box-shadow: 0 1px 5px rgba(0,0,0,0.1);
-        }
-        
-        .survey-title {
-            font-size: 20px;
-            color: #2c3e50;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .rating-section {
-            margin: 20px 0;
-        }
-        
-        .rating-label {
-            font-size: 16px;
-            color: #2c3e50;
-            margin-bottom: 10px;
-            display: block;
-        }
-        
-        .stars {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .star {
-            font-size: 30px;
-            color: #dcdfe6;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-        
-        .star.active {
-            color: #f39c12;
-        }
-        
-        .comment-section {
-            margin: 20px 0;
-        }
-        
-        .comment-input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #dcdfe6;
-            border-radius: 5px;
-            resize: vertical;
-            min-height: 100px;
-            font-size: 14px;
-            font-family: "Microsoft YaHei", sans-serif;
-        }
-        
-        .submit-survey-btn {
-            background-color: #3498db;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        
-        .submit-survey-btn:disabled {
-            background-color: #95a5a6;
-            cursor: not-allowed;
-        }
-        
-        .reset-progress-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 8px 15px;
-            background-color: #e74c3c;
-            border: none;
-            color: white;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-        }
+        body{font-family:Microsoft YaHei;background:#f5f7fa;padding:20px}
+        .box{max-width:700px;margin:auto;background:#fff;padding:30px;border-radius:10px;box-shadow:0 2px 10px rgba(0,0,0,.1)}
+        h1{text-align:center;color:#2c3e50;margin-bottom:20px}
+        video{width:100%;border-radius:8px}
+        .btn{padding:10px 20px;margin:10px 5px 0 0;border:none;border-radius:4px;color:#fff;background:#3498db;cursor:pointer}
+        .btn:hover{background:#217dbb}
+        .debug{color:#e74c3c;font-size:14px;margin-top:10px}
     </style>
-    <!-- 引入SPO JSOM核心库 -->
+    <!-- 1. 核心配置 -->
+    <script>
+        const CFG = {
+            siteUrl: "https://neusoftdbts.sharepoint.com/sites/vueL",   // ← 你的站点
+            listName: "钓鱼邮件培训进度",                                // ← 你的 List
+            videoUrl:"https://neusoftdbts.sharepoint.com/sites/vueL/Shared%20Documents/%E8%A7%86%E9%A2%91%E4%B8%80.mp4"
+        };
+    </script>
+
+    <!-- 2. 加载 SharePoint JSOM -->
     <script src="/_layouts/15/SP.Runtime.js"></script>
     <script src="/_layouts/15/SP.js"></script>
 </head>
 <body>
-    <button class="reset-progress-btn" onclick="resetProgress()">重置学习进度</button>
-    
-    <div class="container">
-        <h1 class="title">钓鱼邮件安全知识培训</h1>
-        
-        <!-- 步骤指示器 -->
-        <div class="step-indicator">
-            <div class="step active" id="step1" onclick="handleStepClick(1)">
-                视频1<br>
-                <span id="step1Progress">0%</span>
-            </div>
-            <div class="step" id="step2" onclick="handleStepClick(2)">
-                视频2<br>
-                <span id="step2Progress">0%</span>
-            </div>
-            <div class="step" id="step3" onclick="handleStepClick(3)">
-                视频3<br>
-                <span id="step3Progress">0%</span>
-            </div>
-            <div class="step" id="step4" onclick="handleStepClick(4)">
-                调查问卷<br>
-                <span id="step4Progress">0%</span>
-            </div>
+    <div class="box">
+        <h1>钓鱼邮件安全培训</h1>
+
+        <!-- 视频 -->
+        <video id="v" controls>
+            <source src="" type="video/mp4">
+        </video>
+
+        <!-- 按钮 -->
+        <div>
+            <button class="btn" onclick="playVideo()">播放</button>
+            <button class="btn" onclick="markWatched()">标记已看完（写库）</button>
+            <button class="btn" onclick="resetRec()">重置记录</button>
         </div>
-        
-        <!-- 整体进度条 -->
-        <div class="overall-progress-area">
-            <div class="overall-progress-text">整体培训进度</div>
-            <div class="overall-progress">
-                <div class="overall-progress-bar" id="overallProgressBar"></div>
-            </div>
-        </div>
-        
-        <!-- 视频1区域（已替换你的SPO视频链接） -->
-        <div id="video1" class="video-section">
-            <div class="video-container">
-                <video id="videoPlayer1" width="100%" height="100%" controls>
-                    <source src="https://neusoftdbts.sharepoint.com/sites/vueL/Shared%20Documents/%E8%A7%86%E9%A2%91%E4%B8%80.mp4" type="video/mp4">
-                    您的浏览器不支持HTML5视频播放，请升级浏览器！
-                </video>
-                
-                <!-- 视频操作按钮 -->
-                <div class="action-buttons" id="actionButtons1">
-                    <button class="action-btn secondary" onclick="restartVideo(1)">重新学习</button>
-                    <button class="action-btn" onclick="showQuestion(1)">开始答题</button>
-                </div>
-                
-                <!-- 答题弹窗 -->
-                <div class="question-modal hidden" id="question1">
-                    <div class="question-content">
-                        <div class="question-modal-header">
-                            <div class="question-title">测试题1：以下哪项不是钓鱼邮件的常见特征？</div>
-                            <button class="close-question-btn" onclick="closeQuestion(1)">×</button>
-                        </div>
-                        <div class="options">
-                            <div class="option" onclick="selectAnswer(1, this)" data-answer="false">A. 发件人邮箱地址异常</div>
-                            <div class="option" onclick="selectAnswer(1, this)" data-answer="false">B. 包含紧急催促的语言</div>
-                            <div class="option" onclick="selectAnswer(1, this)" data-answer="true">C. 邮件内容使用公司正式模板</div>
-                            <div class="option" onclick="selectAnswer(1, this)" data-answer="false">D. 包含不明来源的附件</div>
-                        </div>
-                        <div id="feedback1" style="margin-top: 15px;"></div>
-                        <button class="btn hidden" id="continueBtn1" onclick="continueToVideo2()">继续学习</button>
-                        <button class="btn retry-btn hidden" id="retryBtn1" onclick="resetQuestion(1)">重新答题</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- 视频2区域（已替换你的SPO视频链接） -->
-        <div id="video2" class="video-section hidden">
-            <div class="video-container">
-                <video id="videoPlayer2" width="100%" height="100%" controls>
-                    <source src="https://neusoftdbts.sharepoint.com/sites/vueL/Shared%20Documents/%E8%A7%86%E9%A2%91%E4%BA%8C.mp4" type="video/mp4">
-                    您的浏览器不支持HTML5视频播放，请升级浏览器！
-                </video>
-                
-                <div class="action-buttons" id="actionButtons2">
-                    <button class="action-btn secondary" onclick="restartVideo(2)">重新学习</button>
-                    <button class="action-btn" onclick="showQuestion(2)">开始答题</button>
-                </div>
-                
-                <div class="question-modal hidden" id="question2">
-                    <div class="question-content">
-                        <div class="question-modal-header">
-                            <div class="question-title">测试题2：收到疑似钓鱼邮件，正确的处理方式是？</div>
-                            <button class="close-question-btn" onclick="closeQuestion(2)">×</button>
-                        </div>
-                        <div class="options">
-                            <div class="option" onclick="selectAnswer(2, this)" data-answer="false">A. 点击邮件中的链接验证真伪</div>
-                            <div class="option" onclick="selectAnswer(2, this)" data-answer="false">B. 回复邮件询问发件人</div>
-                            <div class="option" onclick="selectAnswer(2, this)" data-answer="true">C. 立即向IT部门报告并删除邮件</div>
-                            <div class="option" onclick="selectAnswer(2, this)" data-answer="false">D. 转发给同事确认</div>
-                        </div>
-                        <div id="feedback2" style="margin-top: 15px;"></div>
-                        <button class="btn hidden" id="continueBtn2" onclick="continueToVideo3()">继续学习</button>
-                        <button class="btn retry-btn hidden" id="retryBtn2" onclick="resetQuestion(2)">重新答题</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- 视频3区域（已替换你的SPO视频链接） -->
-        <div id="video3" class="video-section hidden">
-            <div class="video-container">
-                <video id="videoPlayer3" width="100%" height="100%" controls>
-                    <source src="https://neusoftdbts.sharepoint.com/sites/vueL/Shared%20Documents/%E8%A7%86%E9%A2%91%E4%B8%89.mp4" type="video/mp4">
-                    您的浏览器不支持HTML5视频播放，请升级浏览器！
-                </video>
-                
-                <div class="action-buttons" id="actionButtons3">
-                    <button class="action-btn secondary" onclick="restartVideo(3)">重新学习</button>
-                    <button class="action-btn" onclick="showQuestion(3)">开始答题</button>
-                </div>
-                
-                <div class="question-modal hidden" id="question3">
-                    <div class="question-content">
-                        <div class="question-modal-header">
-                            <div class="question-title">测试题3：不慎点击钓鱼链接后，首先应该做什么？</div>
-                            <button class="close-question-btn" onclick="closeQuestion(3)">×</button>
-                        </div>
-                        <div class="options">
-                            <div class="option" onclick="selectAnswer(3, this)" data-answer="true">A. 断开网络并向IT部门报告</div>
-                            <div class="option" onclick="selectAnswer(3, this)" data-answer="false">B. 关闭浏览器继续工作</div>
-                            <div class="option" onclick="selectAnswer(3, this)" data-answer="false">C. 单独运行杀毒软件</div>
-                            <div class="option" onclick="selectAnswer(3, this)" data-answer="false">D. 重启电脑</div>
-                        </div>
-                        <div id="feedback3" style="margin-top: 15px;"></div>
-                        <button class="btn hidden" id="continueBtn3" onclick="showSurvey()">继续学习</button>
-                        <button class="btn retry-btn hidden" id="retryBtn3" onclick="resetQuestion(3)">重新答题</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- 满意度调查问卷 -->
-        <div id="survey" class="survey-container hidden">
-            <h2 class="survey-title">培训满意度调查问卷</h2>
-            
-            <div class="rating-section">
-                <label class="rating-label">1. 请为本次培训打分（1星最低，5星最高）：</label>
-                <div class="stars">
-                    <span class="star" data-rating="1" onclick="selectRating(1)">★</span>
-                    <span class="star" data-rating="2" onclick="selectRating(2)">★</span>
-                    <span class="star" data-rating="3" onclick="selectRating(3)">★</span>
-                    <span class="star" data-rating="4" onclick="selectRating(4)">★</span>
-                    <span class="star" data-rating="5" onclick="selectRating(5)">★</span>
-                </div>
-            </div>
-            
-            <div class="comment-section">
-                <label class="rating-label">2. 您对本次培训有什么建议或意见？：</label>
-                <textarea class="comment-input" id="surveyComment" placeholder="请输入您的建议或意见（选填）"></textarea>
-            </div>
-            
-            <button class="submit-survey-btn" id="submitSurveyBtn" disabled onclick="submitSurvey()">提交问卷</button>
-        </div>
+
+        <!-- 调试信息 -->
+        <div id="debug" class="debug">等待操作…</div>
     </div>
 
+    <!-- 3. 业务+调试逻辑 -->
     <script>
-        // ========== 核心配置项（确认和你的SPO环境一致） ==========
-        const LIST_TITLE = "钓鱼邮件培训进度"; // 你的SPO List名称
-        const SITE_URL = "https://neusoftdbts.sharepoint.com/sites/vueL"; // 你的SPO站点URL
-        
-        // 全局变量
-        let currentUser = { upn: "", displayName: "" }; // M365用户信息
-        let selectedRating = 0; // 满意度评分
-        let progress = {
-            currentStep: 1,
-            video1: { watched: false, progress: 0, duration: 0, playing: false },
-            video2: { watched: false, progress: 0, duration: 0, playing: false },
-            video3: { watched: false, progress: 0, duration: 0, playing: false },
-            q1Correct: false,
-            q2Correct: false,
-            q3Correct: false,
-            surveyDone: false,
-            satisfaction: 0,
-            satisfactionTxt: "",
-            isAllCompleted: false
+        let email = "", itemId = 0;   // 当前用户 & List 项 ID
+
+        /* 页面初始化 */
+        window.onload = async () => {
+            document.getElementById("v").src = CFG.videoUrl;
+            await getUser();
+            await loadOrCreateRec();
         };
 
-        // ========== 页面初始化 ==========
-        document.addEventListener('DOMContentLoaded', async () => {
-            try {
-                // 1. 获取M365用户身份（SPO自动认证）
-                await getCurrentUserInfo();
-                // 2. 从SPO List加载用户进度
-                await loadProgressFromSPO();
-                // 3. 初始化满意度问卷状态
-                initSurveyState();
-                // 4. 初始化视频和UI
-                progress.isAllCompleted = progress.video3.watched && progress.q3Correct;
-                initVideoWithMetadata(1);
-                initVideoWithMetadata(2);
-                initVideoWithMetadata(3);
-                updateStepButtons();
-                updateAllProgressDisplays();
-            } catch (err) {
-                console.error("初始化失败：", err);
-                alert(`初始化出错，请确认已登录M365账号并刷新页面！\n错误信息：${err}`);
-            }
-        });
-
-        // ========== SPO身份与数据操作核心方法 ==========
-        /**
-         * 获取当前登录的M365用户信息（UPN和显示名）
-         */
-        function getCurrentUserInfo() {
-            return new Promise((resolve, reject) => {
-                const context = new SP.ClientContext(SITE_URL);
-                const web = context.get_web();
-                const user = web.get_currentUser();
-                context.load(user);
-                context.executeQueryAsync(
-                    () => {
-                        // 清理UPN格式（去掉i:0#.f|membership|前缀）
-                        currentUser.upn = user.get_loginName().replace("i:0#.f|membership|", "");
-                        currentUser.displayName = user.get_title();
-                        resolve();
-                    },
-                    (sender, args) => reject(`获取用户信息失败：${args.get_message()}`)
-                );
-            });
+        /* 拿登录邮箱 */
+        async function getUser(){
+            const ctx = new SP.ClientContext(CFG.siteUrl);
+            const user = ctx.get_web().get_currentUser();
+            ctx.load(user);
+            await new Promise((res,rej)=>ctx.executeQueryAsync(res,()=>rej("getUser失败")));
+            email = user.get_email() || user.get_loginName().split("|").pop();
+            log(`当前用户：${email}`);
         }
 
-        /**
-         * 从SPO List加载用户学习进度
-         */
-        function loadProgressFromSPO() {
-            return new Promise((resolve, reject) => {
-                const context = new SP.ClientContext(SITE_URL);
-                const list = context.get_web().get_lists().getByTitle(LIST_TITLE);
-                
-                // CAML查询：按UPN筛选当前用户记录
-                const camlQuery = new SP.CamlQuery();
-                camlQuery.set_viewXml(`
-                    <View>
-                        <Query>
-                            <Where>
-                                <Eq>
-                                    <FieldRef Name='Title' />
-                                    <Value Type='Text'>${currentUser.upn}</Value>
-                                </Eq>
-                            </Where>
-                        </Query>
-                        <RowLimit>1</RowLimit>
-                    </View>
-                `);
+        /* 读记录 / 没有就新建 */
+        async function loadOrCreateRec(){
+            const ctx = new SP.ClientContext(CFG.siteUrl);
+            const list = ctx.get_web().get_lists().getByTitle(CFG.listName);
+            const q = new SP.CamlQuery();
+            q.set_viewXml(`<View><Query><Where><Eq><FieldRef Name='Title'/><Value Type='Text'>${email}</Value></Eq></Where></Query></View>`);
+            const items = list.getItems(q);
+            ctx.load(items);
+            await new Promise((res,rej)=>ctx.executeQueryAsync(res,rej));
 
-                const items = list.getItems(camlQuery);
-                context.load(items);
-                context.executeQueryAsync(
-                    () => {
-                        if (items.get_count() > 0) {
-                            // 有历史记录：解析数据
-                            const item = items.itemAt(0);
-                            progress = {
-                                currentStep: item.get_item('CurrentStep') || 1,
-                                video1: {
-                                    watched: item.get_item('Video1Watched') || false,
-                                    progress: item.get_item('Video1Progress') || 0,
-                                    duration: 0,
-                                    playing: false
-                                },
-                                video2: {
-                                    watched: item.get_item('Video2Watched') || false,
-                                    progress: item.get_item('Video2Progress') || 0,
-                                    duration: 0,
-                                    playing: false
-                                },
-                                video3: {
-                                    watched: item.get_item('Video3Watched') || false,
-                                    progress: item.get_item('Video3Progress') || 0,
-                                    duration: 0,
-                                    playing: false
-                                },
-                                q1Correct: item.get_item('Q1Correct') || false,
-                                q2Correct: item.get_item('Q2Correct') || false,
-                                q3Correct: item.get_item('Q3Correct') || false,
-                                surveyDone: item.get_item('SurveyDone') || false,
-                                satisfaction: item.get_item('Satisfaction') || 0,
-                                satisfactionTxt: item.get_item('SatisfactionTxt') || "",
-                                isAllCompleted: false
-                            };
-                        } else {
-                            // 无历史记录：初始化默认值并创建新记录
-                            progress = {
-                                currentStep: 1,
-                                video1: { watched: false, progress: 0, duration: 0, playing: false },
-                                video2: { watched: false, progress: 0, duration: 0, playing: false },
-                                video3: { watched: false, progress: 0, duration: 0, playing: false },
-                                q1Correct: false,
-                                q2Correct: false,
-                                q3Correct: false,
-                                surveyDone: false,
-                                satisfaction: 0,
-                                satisfactionTxt: "",
-                                isAllCompleted: false
-                            };
-                            saveProgressToSPO(); // 首次访问创建记录
-                        }
-                        resolve();
-                    },
-                    (sender, args) => reject(`加载进度失败：${args.get_message()}`)
-                );
-            });
-        }
-
-        /**
-         * 保存进度到SPO List
-         */
-        function saveProgressToSPO() {
-            return new Promise((resolve, reject) => {
-                const context = new SP.ClientContext(SITE_URL);
-                const list = context.get_web().get_lists().getByTitle(LIST_TITLE);
-                
-                // 先查询是否存在当前用户记录
-                const camlQuery = new SP.CamlQuery();
-                camlQuery.set_viewXml(`
-                    <View>
-                        <Query>
-                            <Where>
-                                <Eq>
-                                    <FieldRef Name='Title' />
-                                    <Value Type='Text'>${currentUser.upn}</Value>
-                                </Eq>
-                            </Where>
-                        </Query>
-                        <RowLimit>1</RowLimit>
-                    </View>
-                `);
-
-                const items = list.getItems(camlQuery);
-                context.load(items);
-                context.executeQueryAsync(
-                    () => {
-                        let listItem;
-                        if (items.get_count() > 0) {
-                            // 更新已有记录
-                            listItem = items.itemAt(0);
-                        } else {
-                            // 创建新记录
-                            const itemCreateInfo = new SP.ListItemCreationInformation();
-                            listItem = list.addItem(itemCreateInfo);
-                            listItem.set_item('Title', currentUser.upn); // UPN作为主键
-                            listItem.set_item('DisplayName', currentUser.displayName);
-                        }
-
-                        // 填充所有进度数据
-                        listItem.set_item('CurrentStep', progress.currentStep);
-                        listItem.set_item('Video1Watched', progress.video1.watched);
-                        listItem.set_item('Video1Progress', Math.round(progress.video1.progress));
-                        listItem.set_item('Q1Correct', progress.q1Correct);
-                        listItem.set_item('Video2Watched', progress.video2.watched);
-                        listItem.set_item('Video2Progress', Math.round(progress.video2.progress));
-                        listItem.set_item('Q2Correct', progress.q2Correct);
-                        listItem.set_item('Video3Watched', progress.video3.watched);
-                        listItem.set_item('Video3Progress', Math.round(progress.video3.progress));
-                        listItem.set_item('Q3Correct', progress.q3Correct);
-                        listItem.set_item('SurveyDone', progress.surveyDone);
-                        listItem.set_item('Satisfaction', progress.satisfaction);
-                        listItem.set_item('SatisfactionTxt', progress.satisfactionTxt);
-                        listItem.set_item('LastUpdate', new Date());
-
-                        // 提交保存
-                        listItem.update();
-                        context.load(listItem);
-                        context.executeQueryAsync(
-                            () => resolve(),
-                            (sender, args) => reject(`保存进度失败：${args.get_message()}`)
-                        );
-                    },
-                    (sender, args) => reject(`查询用户记录失败：${args.get_message()}`)
-                );
-            });
-        }
-
-        /**
-         * 简化的保存方法（异步不阻塞UI）
-         */
-        function saveProgress() {
-            saveProgressToSPO().catch(err => console.error("进度保存失败：", err));
-        }
-
-        /**
-         * 重置用户所有学习进度
-         */
-        function resetProgress() {
-            if (!confirm('确定要重置所有学习进度吗？此操作不可恢复！')) return;
-
-            const context = new SP.ClientContext(SITE_URL);
-            const list = context.get_web().get_lists().getByTitle(LIST_TITLE);
-            
-            // 查询当前用户记录
-            const camlQuery = new SP.CamlQuery();
-            camlQuery.set_viewXml(`
-                <View>
-                    <Query>
-                        <Where>
-                            <Eq>
-                                <FieldRef Name='Title' />
-                                <Value Type='Text'>${currentUser.upn}</Value>
-                            </Eq>
-                        </Where>
-                    </Query>
-                </View>
-            `);
-
-            const items = list.getItems(camlQuery);
-            context.load(items);
-            context.executeQueryAsync(
-                () => {
-                    if (items.get_count() > 0) {
-                        // 删除用户记录
-                        const item = items.itemAt(0);
-                        item.deleteObject();
-                        context.executeQueryAsync(
-                            () => {
-                                alert("进度重置成功！");
-                                location.reload();
-                            },
-                            (sender, args) => alert(`重置失败：${args.get_message()}`)
-                        );
-                    } else {
-                        alert("暂无学习进度可重置！");
-                        location.reload();
-                    }
-                },
-                (sender, args) => alert(`查询进度失败：${args.get_message()}`)
-            );
-        }
-
-        // ========== 视频与答题核心逻辑 ==========
-        /**
-         * 初始化视频元数据（时长、进度）
-         * @param {number} num 视频编号（1/2/3）
-         */
-        function initVideoWithMetadata(num) {
-            const video = document.getElementById(`videoPlayer${num}`);
-            const actionBtn = document.getElementById(`actionButtons${num}`);
-            
-            // 恢复上次播放进度
-            if (progress[`video${num}`].progress > 0) {
-                video.currentTime = progress[`video${num}`].progress;
-            }
-
-            // 监听视频元数据加载完成
-            video.addEventListener('loadedmetadata', () => {
-                progress[`video${num}`].duration = video.duration;
-                saveProgress();
-                updateStepProgress(num);
-            });
-
-            // 监听视频播放状态
-            video.addEventListener('play', () => {
-                progress[`video${num}`].playing = true;
-                actionBtn.classList.remove('show');
-            });
-
-            // 监听视频暂停
-            video.addEventListener('pause', () => {
-                progress[`video${num}`].playing = false;
-                // 进度≥98%显示操作按钮
-                if (video.currentTime / progress[`video${num}`].duration >= 0.98 || video.ended) {
-                    actionBtn.classList.add('show');
-                    progress[`video${num}`].watched = true;
-                }
-                // 保存暂停时的进度
-                progress[`video${num}`].progress = video.currentTime;
-                saveProgress();
-                updateStepProgress(num);
-            });
-
-            // 监听视频播放进度（实时保存）
-            video.addEventListener('timeupdate', () => {
-                if (progress[`video${num}`].duration === 0) return;
-                
-                // 完成全部学习后强制进度100%
-                if (progress.isAllCompleted) {
-                    progress[`video${num}`].progress = progress[`video${num}`].duration;
-                    progress[`video${num}`].watched = true;
-                } else {
-                    progress[`video${num}`].progress = video.currentTime;
-                }
-                
-                saveProgress();
-                updateStepProgress(num);
-            });
-
-            // 监听视频播放结束
-            video.addEventListener('ended', () => {
-                progress[`video${num}`].playing = false;
-                progress[`video${num}`].watched = true;
-                progress[`video${num}`].progress = progress[`video${num}`].duration;
-                saveProgress();
-                actionBtn.classList.add('show');
-                
-                // 更新完成状态和UI
-                progress.isAllCompleted = progress.video3.watched && progress.q3Correct;
-                updateStepButtons();
-                updateOverallProgress();
-            });
-        }
-
-        /**
-         * 显示答题弹窗
-         * @param {number} num 题目编号（1/2/3）
-         */
-        function showQuestion(num) {
-            document.getElementById(`question${num}`).classList.remove('hidden');
-        }
-
-        /**
-         * 关闭答题弹窗
-         * @param {number} num 题目编号（1/2/3）
-         */
-        function closeQuestion(num) {
-            document.getElementById(`question${num}`).classList.add('hidden');
-        }
-
-        /**
-         * 选择答题选项
-         * @param {number} num 题目编号（1/2/3）
-         * @param {HTMLElement} el 选项元素
-         */
-        function selectAnswer(num, el) {
-            const isCorrect = el.dataset.answer === "true";
-            const options = document.querySelectorAll(`#question${num} .option`);
-            const feedback = document.getElementById(`feedback${num}`);
-            const continueBtn = document.getElementById(`continueBtn${num}`);
-            const retryBtn = document.getElementById(`retryBtn${num}`);
-
-            // 禁用所有选项
-            options.forEach(opt => opt.style.pointerEvents = 'none');
-
-            // 标记正确/错误选项
-            options.forEach(opt => {
-                if (opt.dataset.answer === "true") {
-                    opt.classList.add('correct');
-                } else if (opt === el && !isCorrect) {
-                    opt.classList.add('incorrect');
-                }
-            });
-
-            // 显示反馈信息
-            if (isCorrect) {
-                feedback.textContent = "回答正确！";
-                feedback.style.color = "#27ae60";
-                progress[`q${num}Correct`] = true;
-                continueBtn.classList.remove('hidden'); // 显示继续按钮
-            } else {
-                feedback.textContent = "回答错误，请重新答题！";
-                feedback.style.color = "#e74c3c";
-                progress[`q${num}Correct`] = false;
-                retryBtn.classList.remove('hidden'); // 显示重试按钮
-            }
-
-            // 保存答题结果
-            saveProgress();
-            updateOverallProgress();
-        }
-
-        /**
-         * 重新答题
-         * @param {number} num 题目编号（1/2/3）
-         */
-        function resetQuestion(num) {
-            const options = document.querySelectorAll(`#question${num} .option`);
-            const feedback = document.getElementById(`feedback${num}`);
-            const continueBtn = document.getElementById(`continueBtn${num}`);
-            const retryBtn = document.getElementById(`retryBtn${num}`);
-
-            // 重置选项样式和状态
-            options.forEach(opt => {
-                opt.classList.remove('correct', 'incorrect');
-                opt.style.pointerEvents = 'auto';
-            });
-
-            // 隐藏反馈和按钮
-            feedback.textContent = "";
-            continueBtn.classList.add('hidden');
-            retryBtn.classList.add('hidden');
-        }
-
-        /**
-         * 切换到视频2
-         */
-        function continueToVideo2() {
-            closeQuestion(1);
-            handleStepClick(2);
-        }
-
-        /**
-         * 切换到视频3
-         */
-        function continueToVideo3() {
-            closeQuestion(2);
-            handleStepClick(3);
-        }
-
-        /**
-         * 显示满意度问卷
-         */
-        function showSurvey() {
-            closeQuestion(3);
-            handleStepClick(4);
-        }
-
-        /**
-         * 重新播放视频
-         * @param {number} num 视频编号（1/2/3）
-         */
-        function restartVideo(num) {
-            const video = document.getElementById(`videoPlayer${num}`);
-            video.currentTime = 0;
-            video.play();
-            progress[`video${num}`].progress = 0;
-            progress[`video${num}`].watched = false;
-            saveProgress();
-            updateStepProgress(num);
-        }
-
-        /**
-         * 切换步骤（视频/问卷）
-         * @param {number} step 步骤编号（1/2/3/4）
-         */
-        function handleStepClick(step) {
-            // 验证步骤访问权限（未完成前序步骤不能跳转到后续）
-            if (step > 1 && !progress[`video${step-1}`].watched && !progress[`q${step-1}Correct`]) {
-                alert(`请先完成${step-1}号视频的学习和答题！`);
-                return;
-            }
-
-            // 隐藏所有步骤内容
-            document.getElementById('video1').classList.add('hidden');
-            document.getElementById('video2').classList.add('hidden');
-            document.getElementById('video3').classList.add('hidden');
-            document.getElementById('survey').classList.add('hidden');
-
-            // 重置所有步骤按钮状态
-            document.querySelectorAll('.step').forEach(s => {
-                s.classList.remove('active', 'completed');
-            });
-
-            // 标记已完成的步骤
-            for (let i = 1; i < step; i++) {
-                document.getElementById(`step${i}`).classList.add('completed');
-            }
-
-            // 激活当前步骤
-            document.getElementById(`step${step}`).classList.add('active');
-            progress.currentStep = step;
-
-            // 显示当前步骤内容
-            if (step === 1) document.getElementById('video1').classList.remove('hidden');
-            else if (step === 2) document.getElementById('video2').classList.remove('hidden');
-            else if (step === 3) document.getElementById('video3').classList.remove('hidden');
-            else if (step === 4) document.getElementById('survey').classList.remove('hidden');
-
-            // 保存当前步骤
-            saveProgress();
-            updateOverallProgress();
-        }
-
-        /**
-         * 更新单个步骤的进度显示
-         * @param {number} num 步骤编号（1/2/3/4）
-         */
-        function updateStepProgress(num) {
-            if (num === 4) {
-                // 问卷进度：已提交100%，否则0%
-                const progressPercent = progress.surveyDone ? 100 : 0;
-                document.getElementById(`step4Progress`).textContent = `${progressPercent}%`;
-            } else {
-                // 视频进度：计算百分比
-                const progressPercent = progress[`video${num}`].duration > 0 
-                    ? Math.round((progress[`video${num}`].progress / progress[`video${num}`].duration) * 100) 
-                    : 0;
-                document.getElementById(`step${num}Progress`).textContent = `${progressPercent}%`;
+            if(items.get_count()>0){
+                const it = items.itemAt(0);
+                itemId = it.get_id();
+                log(`读取成功 - ID=${itemId}`);
+            }else{
+                const ci = new SP.ListItemCreationInformation();
+                const it = list.addItem(ci);
+                it.set_item("Title",email);
+                it.set_item("Video1Watched",false);
+                it.update();
+                ctx.load(it);
+                await new Promise((res,rej)=>ctx.executeQueryAsync(res,rej));
+                itemId = it.get_id();
+                log(`新建记录 - ID=${itemId}`);
             }
         }
 
-        /**
-         * 更新所有步骤的进度显示
-         */
-        function updateAllProgressDisplays() {
-            updateStepProgress(1);
-            updateStepProgress(2);
-            updateStepProgress(3);
-            updateStepProgress(4);
-            updateOverallProgress();
+        /* 标记看完 + 写库 */
+        async function markWatched(){
+            if(!itemId){log("还没有记录，无法更新");return;}
+            const ctx = new SP.ClientContext(CFG.siteUrl);
+            const list = ctx.get_web().get_lists().getByTitle(CFG.listName);
+            const it = list.getItemById(itemId);
+            it.set_item("Video1Watched",true);
+            it.set_item("LastUpdate",new Date());
+            it.update();
+            await new Promise((res,rej)=>ctx.executeQueryAsync(
+                ()=>{log("✅ 已标记看完，List 已更新！");res();},
+                (s,a)=>{log("❌ 写库失败："+a.get_message());rej();}
+            ));
         }
 
-        /**
-         * 更新整体进度条
-         */
-        function updateOverallProgress() {
-            // 计算总进度（视频1+视频2+视频3+问卷，每项25%）
-            let totalProgress = 0;
-            
-            // 视频1进度（25%权重）
-            totalProgress += progress.video1.watched && progress.q1Correct 
-                ? 25 
-                : (progress.video1.duration > 0 ? (progress.video1.progress / progress.video1.duration) * 25 : 0);
-            
-            // 视频2进度（25%权重）
-            totalProgress += progress.video2.watched && progress.q2Correct 
-                ? 25 
-                : (progress.video2.duration > 0 ? (progress.video2.progress / progress.video2.duration) * 25 : 0);
-            
-            // 视频3进度（25%权重）
-            totalProgress += progress.video3.watched && progress.q3Correct 
-                ? 25 
-                : (progress.video3.duration > 0 ? (progress.video3.progress / progress.video3.duration) * 25 : 0);
-            
-            // 问卷进度（25%权重）
-            totalProgress += progress.surveyDone ? 25 : 0;
-
-            // 更新进度条样式
-            const progressBar = document.getElementById('overallProgressBar');
-            progressBar.style.width = `${Math.round(totalProgress)}%`;
+        /* 重置（调试用） */
+        async function resetRec(){
+            if(!itemId){log("暂无记录可删");return;}
+            if(!confirm("确定删除自己的调试记录？"))return;
+            const ctx = new SP.ClientContext(CFG.siteUrl);
+            const list = ctx.get_web().get_lists().getByTitle(CFG.listName);
+            list.getItemById(itemId).deleteObject();
+            await new Promise((res,rej)=>ctx.executeQueryAsync(res,rej));
+            itemId=0;
+            log("记录已删除，请刷新页面重新生成");
         }
 
-        // ========== 满意度问卷核心逻辑 ==========
-        /**
-         * 初始化问卷状态（恢复历史评分/意见）
-         */
-        function initSurveyState() {
-            if (progress.satisfaction > 0) {
-                selectedRating = progress.satisfaction;
-                // 恢复星星选中状态
-                const stars = document.querySelectorAll('.star');
-                stars.forEach(star => {
-                    const starRating = parseInt(star.dataset.rating);
-                    if (starRating <= progress.satisfaction) {
-                        star.classList.add('active');
-                    }
-                });
-                // 恢复意见文本
-                document.getElementById("surveyComment").value = progress.satisfactionTxt || "";
-            }
-
-            // 已提交问卷：禁用编辑
-            if (progress.surveyDone) {
-                document.getElementById("submitSurveyBtn").disabled = true;
-                document.getElementById("submitSurveyBtn").textContent = "已提交";
-                document.querySelectorAll('.star').forEach(star => star.style.pointerEvents = 'none');
-                document.getElementById("surveyComment").disabled = true;
-            }
+        /* 工具：写调试信息到页面 */
+        function log(msg){
+            document.getElementById("debug").innerHTML=`${new Date().toLocaleTimeString()}　${msg}`;
         }
 
-        /**
-         * 选择满意度评分
-         * @param {number} rating 评分（1-5）
-         * @param {boolean} isInit 是否初始化调用
-         */
-        function selectRating(rating, isInit = false) {
-            if (progress.surveyDone) return; // 已提交则禁止修改
-            
-            selectedRating = rating;
-            progress.satisfaction = rating;
-            
-            // 更新星星样式
-            const stars = document.querySelectorAll('.star');
-            stars.forEach(star => {
-                const starRating = parseInt(star.dataset.rating);
-                star.classList.toggle('active', starRating <= rating);
-            });
-
-            // 启用提交按钮
-            document.getElementById("submitSurveyBtn").disabled = !isInit && rating === 0;
-            
-            // 实时保存评分
-            saveProgress();
-        }
-
-        /**
-         * 提交满意度问卷
-         */
-        function submitSurvey() {
-            if (selectedRating === 0) {
-                alert("请先为本次培训打分！");
-                return;
-            }
-
-            // 获取意见文本
-            const comment = document.getElementById("surveyComment").value.trim();
-            progress.surveyDone = true;
-            progress.satisfaction = selectedRating;
-            progress.satisfactionTxt = comment;
-
-            // 保存到SPO并反馈
-            saveProgressToSPO()
-                .then(() => {
-                    alert('问卷提交成功！感谢您的宝贵反馈');
-                    // 禁用问卷编辑
-                    document.getElementById("submitSurveyBtn").disabled = true;
-                    document.getElementById("submitSurveyBtn").textContent = "已提交";
-                    document.querySelectorAll('.star').forEach(star => star.style.pointerEvents = 'none');
-                    document.getElementById("surveyComment").disabled = true;
-                    // 更新进度显示
-                    updateStepProgress(4);
-                    updateOverallProgress();
-                })
-                .catch(err => {
-                    alert(`提交失败：${err}\n请刷新页面重试！`);
-                });
-        }
+        /* 工具：播放视频 */
+        function playVideo(){document.getElementById("v").play();}
     </script>
 </body>
-</html> 
+</html>
